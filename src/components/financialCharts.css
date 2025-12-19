@@ -1,0 +1,12 @@
+.center-div {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 2rem;
+}
+
+.chart-container {
+  width: 600px;
+  height: 300px;
+  flex-shrink: 0;
+}
