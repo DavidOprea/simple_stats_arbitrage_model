@@ -9,7 +9,9 @@ app.include_router(ticker.router)
 app.include_router(trade.router)
 
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://simplestatsarbitragemodel.vercel.app"
 ]
 
 app.add_middleware(
