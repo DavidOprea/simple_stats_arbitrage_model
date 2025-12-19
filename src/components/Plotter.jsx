@@ -108,7 +108,7 @@ function Plotter() {
           Submit
         </button>
       </div>
-      <FinancialChart data={stockData.data} />
+      {stockData && <FinancialChart data={stockData.data} />}
     </div>
   );
 }
