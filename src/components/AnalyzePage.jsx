@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import { useLocalStorage } from '../App';
+import { fetchAPI } from '../utils/api';
 
 function AnalyzePage() {
   const [longStock, setLongStock] = useLocalStorage('longStock', '');
@@ -13,7 +14,7 @@ function AnalyzePage() {
     });
 
     try {
-      const response = await fetch(`http://localhost:8000/trade/analyze?${params}`, {
+      const response = await fetchAPI(`http://localhost:8000/trade/analyze?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import { use, useState, useEffect } from 'react';
 import { useLocalStorage } from '../App';
 import FinancialChart from './FinancialCharts';
+import { fetchApi } from '../utils/api';
 
 function Plotter() {
   const [tickerA, setTickerA] = useLocalStorage('tickerA', '');
@@ -32,7 +33,7 @@ function Plotter() {
     // console.log(startDate);
     // console.log(endDate);
     try {
-      const response = await fetch('http://localhost:8000/ticker', {
+      const response = await fetchAPI('http://localhost:8000/ticker', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

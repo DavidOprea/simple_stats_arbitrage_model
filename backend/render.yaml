@@ -1,0 +1,17 @@
+# backend/render.yaml
+services:
+  - type: web
+    name: pairs-trading-backend
+    env: python
+    rootDir: backend 
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ALPACA_API_KEY
+        sync: false
+      - key: ALPACA_API_SECRET
+        sync: false
+    healthCheckPath: /
+    autoDeploy: true
+    plans:
+      - name: free

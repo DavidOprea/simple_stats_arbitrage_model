@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from '../App';
+import { fetchAPI } from '../utils/api';
 
 function TradePage() {
   const [longTicker, setLongTicker] = useLocalStorage('longTicker', '');
@@ -22,7 +23,7 @@ function TradePage() {
 
   const submitTickers = async () => {
     try {
-      const response = await fetch('http://localhost:8000/trade', {
+      const response = await fetchAPI('http://localhost:8000/trade', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ function TradePage() {
 
   const submitViewOrders = async () => {
     try {
-      const response = await fetch ('http://localhost:8000/trade/all', {
+      const response = await fetchAPI('http://localhost:8000/trade/all', {
         method: 'GET',
         headers: {
           "Content-Type": 'application/json'
@@ -73,7 +74,7 @@ function TradePage() {
     console.log('Cancelling order for stock pair:', cancelStockPair);
 
     try {
-      const response = await fetch('http://localhost:8000/trade?' + params, {
+      const response = await fetchAPI('http://localhost:8000/trade?' + params, {
         method: 'DELETE',
         headers: {
           "Content-Type": 'application/json'

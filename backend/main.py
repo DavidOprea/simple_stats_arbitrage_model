@@ -21,8 +21,8 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+async def root():
+    return {"status" : "ok", "message": "Pairs Trading API"}
 
 '''
 def main():

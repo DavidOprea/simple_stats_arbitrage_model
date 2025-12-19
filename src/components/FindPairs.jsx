@@ -1,5 +1,6 @@
 import { use, useState, useEffect } from 'react';
 import { useLocalStorage } from '../App';
+import { fetchAPI } from '../utils/api';
 
 function FindPairs() {
   const [startDate, setStartDate] = useLocalStorage('pairsStartDate', '')
@@ -32,7 +33,7 @@ function FindPairs() {
         numRows: numRows
       });
 
-      const response = await fetch('http://localhost:8000/best_pairs?' + params, {
+      const response = await fetchAPI('http://localhost:8000/best_pairs?' + params, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
