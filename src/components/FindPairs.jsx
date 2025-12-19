@@ -33,7 +33,7 @@ function FindPairs() {
         numRows: numRows
       });
 
-      const response = await fetchAPI('http://localhost:8000/best_pairs?' + params, {
+      const response = await fetchAPI('/best_pairs?' + params, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

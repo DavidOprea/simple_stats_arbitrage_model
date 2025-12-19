@@ -9,6 +9,12 @@ function TradePage() {
   const [stockPairs, setStockPairs] = useLocalStorage('stockPairs', []);
   const [cancelStockPair, setCancelStockPair] = useLocalStorage('cancelStockPair', {});
 
+  useEffect(() => {
+    if (stockPairs.length > 0 && !cancelStockPair) {
+      setCancelStockPair(stockPairs[0]);
+    }
+  }, [stockPairs, cancelStockPair])
+
   const handleLongTickerChange = (event) => {
     setLongTicker(event.target.value);
   }
@@ -18,12 +24,20 @@ function TradePage() {
   }
 
   const handleCancelStockPairChange = (event) => {
-    setCancelStockPair(event.target.value);
+    let [a, b] = event.target.value.split('/');
+    a = a.trim();
+    b = b.trim();
+    stockPairs.forEach((pair) => {
+      if (pair.long_symbol === a && pair.short_symbol === b) {
+        setCancelStockPair(pair);
+        console.log('Selected stock pair for cancellation:', pair);
+      }
+    });
   }
 
   const submitTickers = async () => {
     try {
-      const response = await fetchAPI('http://localhost:8000/trade', {
+      const response = await fetchAPI('/trade', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,6 +50,7 @@ function TradePage() {
       if (response.ok) {
         console.log('Tickers submitted successfully:', data);
         setStockPairs(stockPairs.concat(data));
+        console.log(stockPairs);
       } else {
         console.error('Error submitting tickers:', data);
       }
@@ -46,7 +61,7 @@ function TradePage() {
 
   const submitViewOrders = async () => {
     try {
-      const response = await fetchAPI('http://localhost:8000/trade/all', {
+      const response = await fetchAPI('/trade/all', {
         method: 'GET',
         headers: {
           "Content-Type": 'application/json'
@@ -68,13 +83,14 @@ function TradePage() {
 
   const submitCancelOrder = async () => {
     const params = new URLSearchParams({
-      stockPair: cancelStockPair
+      longAssetId: cancelStockPair.long_asset_id,
+      shortAssetId: cancelStockPair.short_asset_id,
     });
 
     console.log('Cancelling order for stock pair:', cancelStockPair);
 
     try {
-      const response = await fetchAPI('http://localhost:8000/trade?' + params, {
+      const response = await fetchAPI('/trade?' + params, {
         method: 'DELETE',
         headers: {
           "Content-Type": 'application/json'
@@ -85,6 +101,13 @@ function TradePage() {
 
       if (response.ok) {
         console.log('Order cancelled successfully:', data);
+
+        const updatedPairs = stockPairs.filter(p => p !== cancelStockPair);
+        setStockPairs(updatedPairs);
+        
+        localStorage.setItem('stockPairs', JSON.stringify(updatedPairs));
+
+        setCancelStockPair(updatedPairs.length > 0 ? updatedPairs[0] : null);
       } else {
         console.error('Error cancelling order:', data);
       }
@@ -131,9 +154,14 @@ function TradePage() {
       <h2 className="subheading underline">Sell Open Position</h2>
       <div className="center-div">
         <label className="bold">Stock Pair: </label>
-        <select value={cancelStockPair} onChange={handleCancelStockPairChange}>
+        <select 
+          value={cancelStockPair ? `${cancelStockPair.long_symbol} / ${cancelStockPair.short_symbol}` : ''} 
+          onChange={handleCancelStockPairChange}
+        >
           {stockPairs.map((pair, index) => (
-            <option key={index} value={pair.order_id}>{pair.longSymbol} / {pair.shortSymbol}</option>
+            <option key={index} value={`${pair.long_symbol} / ${pair.short_symbol}`}>
+              {pair.long_symbol} / {pair.short_symbol}
+            </option>
           ))}
         </select>
       </div>

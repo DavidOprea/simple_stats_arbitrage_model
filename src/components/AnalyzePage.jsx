@@ -3,18 +3,30 @@ import { useLocalStorage } from '../App';
 import { fetchAPI } from '../utils/api';
 
 function AnalyzePage() {
-  const [longStock, setLongStock] = useLocalStorage('longStock', '');
-  const [shortStock, setShortStock] = useLocalStorage('shortStock', '');
+  const [cancelStockPair, setCancelStockPair] = useLocalStorage('cancelStockPair', null);
+  const [stockPairs, setStockPairs] = useLocalStorage('stockPairs', []);
   const [pairAnalysisData, setPairAnalysisData] = useLocalStorage('pairAnalysisData', null);
+
+  const handleCancelStockPairChange = (event) => {
+    let [a, b] = event.target.value.split('/');
+    a = a.trim();
+    b = b.trim();
+    stockPairs.forEach((pair) => {
+      if (pair.long_symbol === a && pair.short_symbol === b) {
+        setCancelStockPair(pair);
+        console.log('Selected stock pair for cancellation:', pair);
+      }
+    });
+  }
 
   const analyzePair = async () => {
     const params = new URLSearchParams({
-      long: longStock,
-      short: shortStock
+      long_symbol: cancelStockPair.long_symbol,
+      short_symbol: cancelStockPair.short_symbol
     });
 
     try {
-      const response = await fetchAPI(`http://localhost:8000/trade/analyze?${params}`, {
+      const response = await fetchAPI(`/trade/analyze?${params}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -38,20 +50,17 @@ function AnalyzePage() {
     <div>
       <h3 className="subheading underline">Check Pair Performance</h3>
       <div className="center-div">
-        <label className="bold">Long (Buy) Stock:</label>
-        <input 
-          type="text"
-          value={longStock}
-          onChange={(e) => setLongStock(e.target.value)}
-        />
-      </div>
-      <div className="center-div">
-        <label className="bold">Short (Sell) Stock:</label>
-        <input 
-          type="text"
-          value={shortStock}
-          onChange={(e) => setShortStock(e.target.value)}
-        />
+        <label className="bold">Stock Pair: </label>
+        <select 
+          value={cancelStockPair ? `${cancelStockPair.long_symbol} / ${cancelStockPair.short_symbol}` : ''} 
+          onChange={handleCancelStockPairChange}
+        >
+          {stockPairs.map((pair, index) => (
+            <option key={index} value={`${pair.long_symbol} / ${pair.short_symbol}`}>
+              {pair.long_symbol} / {pair.short_symbol}
+            </option>
+          ))}
+        </select>
       </div>
       <div className="center-div">
         <button className="submit-button" onClick={analyzePair}>Analyze Pair</button>
